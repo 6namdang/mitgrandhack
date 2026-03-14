@@ -1,6 +1,9 @@
 export default function Dashboard() {
 
     return (
-        <div> F U</div>
+        <div>
+hellos
+            <div></div>
+        </div>
     )
 }

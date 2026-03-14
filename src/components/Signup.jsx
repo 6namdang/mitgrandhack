@@ -24,7 +24,7 @@ export default function SignUp({ onSwitch }) {
       setLoading(false);
     } else {
       // Since email confirm is off, session is created immediately
-      navigate("/dashboard");
+      navigate("/onboarding");
     }
   };
 
