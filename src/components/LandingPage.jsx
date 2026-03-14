@@ -145,7 +145,7 @@ export default function BurxLanding() {
           <p className="text-xs font-mono text-slate-500 uppercase tracking-[0.4em] mb-12">Trusted Clinical Standards</p>
           <div className="flex flex-wrap justify-center gap-12 opacity-40 grayscale hover:grayscale-0 transition-all">
             <span className="text-xl font-bold">HIPAA COMPLIANT</span>
-            <span className="text-xl font-bold">FDA CLASS I</span>
+            <span className="text-xl font-bold">FDA CLASS II</span>
             <span className="text-xl font-bold">AES-256 ENCRYPTED</span>
           </div>
         </div>
