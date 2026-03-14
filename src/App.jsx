@@ -1,44 +1,60 @@
-// 1. Import your new components
-import SignUp from "./signup";
-import Login from "./login";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router"; // Use 'react-router-dom' if standard
+import { supabase } from "./lib/SupabaseClient.js";
+import Dashboard from "./components/Dashboard.jsx";
 
-export default function BurxOnboarding() {
-  // 2. Change 'view' state to handle more than just steps
-  const [view, setView] = useState("onboarding"); // "onboarding", "signup", "login"
-  const [step, setStep] = useState(0);
+import BurxOnboarding from "./components/BurxOnboarding.jsx";
+import AuthPage from "./components/AuthPage.jsx"; // The new consolidated component
 
-  const handleNext = () => {
-    if (step < steps.length - 1) {
-      setStep(step + 1);
-    } else {
-      // Transition to signup once onboarding ends
-      setView("signup");
-    }
-  };
+export default function App() {
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#030712] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white flex flex-col items-center">
-      {/* ... Header and Background Layers ... */}
+    <BrowserRouter>
+      <Routes>
+        {/* Landing/Onboarding */}
+        <Route 
+          path="/" 
+          element={!session ? <BurxOnboarding /> : <Navigate to="/dashboard" />} 
+        />
 
-      <main className="flex-1 w-full flex flex-col items-center justify-center z-10">
-        {view === "onboarding" && (
-           <>
-             {/* Render your Visuals and Headline here as you had them */}
-             {/* ... */}
-             <button onClick={handleNext} className="btn-primary">
-                {steps[step].cta}
-             </button>
-           </>
-        )}
+        {/* Unified Auth Route */}
+        <Route 
+          path="/login" 
+          element={!session ? <AuthPage /> : <Navigate to="/dashboard" />} 
+        />
+        
+        {/* Redirect /signup to /login so the toggle handles it */}
+        <Route path="/signup" element={<Navigate to="/login" />} />
 
-        {view === "signup" && (
-          <SignUp onSwitch={() => setView("login")} />
-        )}
-
-        {view === "login" && (
-          <Login onSwitch={() => setView("signup")} />
-        )}
-      </main>
-    </div>
+        {/* Protected Routes */}
+        <Route 
+          path="/dashboard" 
+          element={session ? <Dashboard session={session} /> : <Navigate to="/login" />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
