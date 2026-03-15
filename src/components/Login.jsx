@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router"; // Import navigate
+import { useNavigate } from "react-router";
 import { supabase } from "../lib/SupabaseClient.js";
 
 export default function Login({ onSwitch }) {
